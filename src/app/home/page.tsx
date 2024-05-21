@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ComponentName: React.FC = () => {
+const Homepage = () => {
   return (
     <div>
         hihahaha
@@ -8,4 +8,4 @@ const ComponentName: React.FC = () => {
   );
 };
 
-export default ComponentName;
+export default Homepage;

@@ -2,13 +2,15 @@
 import { useState } from "react";
 import axios from "axios";
 import React from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const Home = () => {
   const [adminName, setAdminName] = useState('');
   const [password, setPassword] = useState('');
   const [token, setToken] = useState<string | null>(null);
-  // const router = useRouter();
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -20,7 +22,7 @@ const Home = () => {
       const token = response.data.token;
       setToken(token);
       alert("Login successful!" + token);
-      // router.push('/home');
+      router.push('/home');
     } catch (error) {
       if (axios.isAxiosError(error)) {
         alert("Invalid username or password");
@@ -28,6 +30,9 @@ const Home = () => {
         console.error("An unexpected error occurred:", error);
       }
     }
+  };
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -47,14 +52,19 @@ const Home = () => {
         </div>
         <div className="form-group">
           <label htmlFor="password">Password:</label>
-          <input
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
-            id="password"
-            name="password"
-            required
-          />
+          <div className="password-input">
+            <input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              required
+            />
+            <span className="toggle-password" onClick={toggleShowPassword}>
+              {showPassword ? "🙈" : "👁️"}
+            </span>
+          </div>
         </div>
         <button type="submit">Login</button>
       </form>
