@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { json } from "stream/consumers";
 
 const Home = () => {
   const [adminName, setAdminName] = useState('');
@@ -10,6 +11,7 @@ const Home = () => {
   const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
 
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -22,8 +24,9 @@ const Home = () => {
       const token = response.data.token;
       setToken(token);
       localStorage.setItem('userToken', token);
-      alert("Login successful!" + token);
-      router.push('/home');
+      alert("Login successful!" + response.data.token);
+      // Viet api admin get /me de lay info cua admin hien tai
+      router.push('/dashboard');
     } catch (error) {
       if (axios.isAxiosError(error)) {
         alert("Invalid username or password");

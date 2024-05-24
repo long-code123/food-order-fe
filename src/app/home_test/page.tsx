@@ -46,6 +46,40 @@ async function fetchData(endpoint: string, token: string) {
   return res.json();
 }
 
+async function createFood(token: string, food: Omit<Food, 'foodId'>) {
+  const res = await fetch('http://localhost:8000/api/v1/foods', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(food)
+  });
+  return res.json();
+}
+
+async function updateFood(token: string, foodId: number, food: Omit<Food, 'foodId'>) {
+  const res = await fetch(`http://localhost:8000/api/v1/foods/${foodId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(food)
+  });
+  return res.json();
+}
+
+async function deleteFood(token: string, foodId: number) {
+  const res = await fetch(`http://localhost:8000/api/v1/foods/${foodId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  return res.json();
+}
+
 export default function Home() {
   const [foods, setFoods] = useState<Food[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -54,9 +88,17 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const [role, setRole] = useState<string | null>(null);
+  const [newFood, setNewFood] = useState<Partial<Food>>({});
 
+  
   useEffect(() => {
     const token = localStorage.getItem('userToken');
+
+    const userRole = localStorage.getItem('userRole'); // Get user role from local storage
+    setRole(userRole);
+    console.log(userRole);
+
     if (token) {
       Promise.all([
         fetchData('foods', token),
@@ -92,6 +134,23 @@ export default function Home() {
     router.push('/login'); // Redirect to login page after logout
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewFood({ ...newFood, [e.target.name]: e.target.value });
+  };
+
+  const handleCreateFood = async () => {
+    const token = localStorage.getItem('userToken');
+  
+    if (token) {
+      try {
+        const createdFood = await createFood(token, newFood as Omit<Food, 'foodId'>);
+        setFoods([...foods, createdFood]);
+      } catch (error) {
+        setError('Failed to create food');
+      }
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -115,13 +174,15 @@ export default function Home() {
       </div>
       <div>
         <h1 className="header">All List Foods</h1>
-        {/* <div className="createFood">
-          <input type="text" placeholder="Food Name" className="inputFood" />
-          <input type="number" placeholder="Price" className="inputFood" />
-          <input type="text" placeholder="Description" className="inputFood" />
-          <input type="text" placeholder="Image URL" className="inputFood" />
-          <button type="submit" className="btncreateFood">Add Food</button>
-        </div> */}
+        {role === 'super admin' && (
+          <div className="createFood">
+            <input type="text" placeholder="Food Name" className="inputFood" name="foodName" onChange={handleInputChange} />
+            <input type="number" placeholder="Price" className="inputFood" name="price" onChange={handleInputChange} />
+            <input type="text" placeholder="Description" className="inputFood" name="description" onChange={handleInputChange} />
+            <input type="text" placeholder="Image URL" className="inputFood" name="foodImage" onChange={handleInputChange} />
+            <button onClick={handleCreateFood} className="btncreateFood">Add Food</button>
+          </div>
+        )}
         <ul className="foodContainers">
           {foods.map(food => (
             <li key={food.foodId} className="listsssFood">
@@ -140,18 +201,6 @@ export default function Home() {
             <li key={user.userId} className="listUser">
               <h2>{user.userName}</h2>
               <p>Email: {user.email}</p>
-              {/* Hiển thị các thông tin khác của người dùng nếu có */}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <h1 className="header">All List Shippers</h1>
-        <ul className="shipperContainer">
-          {shippers.map(shipper => (
-            <li key={shipper.shipperId} className="listShipper">
-              <h2>{shipper.shipperName}</h2>
-              <p>Email: {shipper.email}</p>
               {/* Hiển thị các thông tin khác của người dùng nếu có */}
             </li>
           ))}
