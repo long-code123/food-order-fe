@@ -134,6 +134,26 @@ body {
   cursor: pointer;
 }
 
+.trigger{
+  color: white;
+  font-size: 30px;
+  display: flex; 
+  align-items: center; 
+  height: 100% 
+}
+.ant-layout{
+  min-height: 100vh;
+}
+
+.logo{
+  margin-top: 50px;
+}
+
+.sider-items{
+  font-size: 25px;
+}
+
+
 label {
   display: block;
   margin-bottom: 5px;
