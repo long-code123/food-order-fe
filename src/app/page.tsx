@@ -1,3 +1,91 @@
+'use client'
+
+import AppLayout from '@/components/layout';
+
+import { Space, Table, Tag } from 'antd';
+import type { TableProps } from 'antd';
+import { Card } from 'antd'
+
+interface DataType {
+    key: string;
+    name: string;
+    age: number;
+    address: string;
+    tags: string[];
+  }
+  
+  const columns: TableProps<DataType>['columns'] = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text) => <a>{text}</a>,
+    },
+    {
+      title: 'Age',
+      dataIndex: 'age',
+      key: 'age',
+    },
+    {
+      title: 'Address',
+      dataIndex: 'address',
+      key: 'address',
+    },
+    {
+      title: 'Tags',
+      key: 'tags',
+      dataIndex: 'tags',
+      render: (_, { tags }) => (
+        <>
+          {tags.map((tag) => {
+            let color = tag.length > 5 ? 'geekblue' : 'green';
+            if (tag === 'loser') {
+              color = 'volcano';
+            }
+            return (
+              <Tag color={color} key={tag}>
+                {tag.toUpperCase()}
+              </Tag>
+            );
+          })}
+        </>
+      ),
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_, record) => (
+        <Space size="middle">
+          <a>Invite {record.name}</a>
+          <a>Delete</a>
+        </Space>
+      ),
+    },
+  ];
+  
+  const data: DataType[] = [
+    {
+      key: '1',
+      name: 'John Brown',
+      age: 32,
+      address: 'New York No. 1 Lake Park',
+      tags: ['nice', 'developer'],
+    },
+    {
+      key: '2',
+      name: 'Jim Green',
+      age: 42,
+      address: 'London No. 1 Lake Park',
+      tags: ['loser'],
+    },
+    {
+      key: '3',
+      name: 'Joe Black',
+      age: 32,
+      address: 'Sydney No. 1 Lake Park',
+      tags: ['cool', 'teacher'],
+    },
+  ];
 // interface Food {
 //   foodId: number;
 //   foodName: string;
@@ -10,41 +98,14 @@
 //   return res.json();
 // }
 
-// export default async function Home() {
+export default async function Home() {
 //   const data: Food[] = await getData();
 //   console.log(data);
-//   return (
-//     <div className="container">
-//       <div>
-//       <nav className="navbar">
-//         <ul className="nav-list">
-//           <li><a href="#">Home</a></li>
-//           <li><a href="#">About</a></li>
-//           <li><a href="#">Services</a></li>
-//           <li><a href="#">Contact</a></li>
-//         </ul>
-//       </nav>
-//       </div>
-//       <div>
-//       <h1 className="header">All List Foods</h1>
-//       <div className="createFood">
-//         <input type="text" placeholder="Food Name" className="inputFood" />
-//         <input type="number" placeholder="Price" className="inputFood" />
-//         <input type="text" placeholder="Description" className="inputFood" />
-//         <input type="text" placeholder="Image URL" className="inputFood" />
-//         <button type="submit" className="btncreateFood">Add Food</button>
-//       </div>
-//       <ul className="foodContainer">
-//         {data.map(food => (
-//           <li key={food.foodId} className="listFood">
-//             <h2>{food.foodName}</h2>
-//             <p>Price: {food.price}</p>
-//             {/* <p>Description: {food.description}</p> */}
-//             <img src={food.foodImage} alt={food.foodName} />
-//           </li>
-//         ))}
-//       </ul>
-//       </div>
-//     </div>
-//   );
-// }
+ 
+  return (
+    <AppLayout activeMenuKey='dashboard'>
+        <Card title="Dashboard">
+        </Card>
+    </AppLayout>
+  );
+}
