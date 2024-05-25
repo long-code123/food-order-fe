@@ -1,5 +1,3 @@
-// foodAPI.ts
-
 export interface Food {
   foodId: number;
   foodName: string;
@@ -27,6 +25,79 @@ export const fetchFoods = async (): Promise<Food[]> => {
     }
   } catch (error) {
     console.error("Error fetching data:", error);
+    throw error;
+  }
+};
+
+export const createFood = async (foodData: Partial<Food>): Promise<Food> => {
+  const token = localStorage.getItem('userToken');
+  if (!token) {
+    throw new Error("Token is required");
+  }
+  try {
+    const res = await fetch("http://localhost:8000/api/v1/foods", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(foodData)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data;
+    } else {
+      throw new Error("Failed to create food");
+    }
+  } catch (error) {
+    console.error("Error creating food:", error);
+    throw error;
+  }
+};
+
+export const updateFood = async (foodId: number, foodData: Partial<Food>): Promise<Food> => {
+  const token = localStorage.getItem('userToken');
+  if (!token) {
+    throw new Error("Token is required");
+  }
+  try {
+    const res = await fetch(`http://localhost:8000/api/v1/foods/${foodId}`, {
+      method: 'PUT', // Sử dụng method PUT để cập nhật dữ liệu
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(foodData)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data;
+    } else {
+      throw new Error("Failed to update food");
+    }
+  } catch (error) {
+    console.error("Error updating food:", error);
+    throw error;
+  }
+};
+
+export const deleteFood = async (foodId: number): Promise<void> => {
+  const token = localStorage.getItem('userToken');
+  if (!token) {
+    throw new Error("Token is required");
+  }
+  try {
+    const res = await fetch(`http://localhost:8000/api/v1/foods/${foodId}`, {
+      method: 'DELETE', // Sử dụng method DELETE để xóa dữ liệu
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!res.ok) {
+      throw new Error("Failed to delete food");
+    }
+  } catch (error) {
+    console.error("Error deleting food:", error);
     throw error;
   }
 };

@@ -35,17 +35,23 @@ body {
   text-align: center;
 }
 
-.foodContainer {
-  position: fixed;
-  bottom: 0;
+.container-superadmin-food{
   display: flex;
-  flex-direction: row;
-  margin-bottom: 100px;
+  justify-content: space-between;
+}
+
+.foodContainers {
+  display: flex;
+  flex-wrap: wrap;
+
 }
 
 .listFood {
-  margin: 112px; /* Đặt margin giữa các phần tử */
+  flex: 0 0 calc(33.33% - 20px); /* Đặt kích thước cho mỗi phần tử là 1/3 chiều rộng của container */
+  margin: 10px; /* Tạo khoảng cách giữa các phần tử */
+  box-sizing: border-box; /* Đảm bảo kích thước của phần tử bao gồm cả padding và border */
 }
+
 
 .createFood {
   display: flex;
@@ -54,17 +60,91 @@ body {
 
 .inputFood {
   padding: 10px;
-  max-width: 50%;
   margin: 10px;
   border-radius: 5px;
 }
 
-.btncreateFood{
+.container-superadmin-food {
+  position: relative;
+}
+
+.editFood {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%; /* Điều chỉnh chiều rộng của màn hình edit */
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+}
+
+.editFood form {
+  display: flex;
+  flex-direction: column;
+}
+
+.editFood div {
+  margin-bottom: 8px;
+}
+
+.editFood input {
+  padding: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.editFood button {
+  padding: 10px 20px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+
+.editFood button:hover {
+  background-color: #0056b3;
+}
+
+
+.container-superadmin-food::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Màu mờ */
+  z-index: 50;
+  display: none;
+}
+
+.container-superadmin-food.editing::before {
+  display: block;
+}
+
+.btn {
   max-width: fit-content;
-  padding: 10px;
+  padding: 10px 20px; /* Tùy chỉnh padding để điều chỉnh kích thước của nút */
   background-color: skyblue;
   color: white;
+  border: none;
+  border-radius: 5px;
   margin: 10px;
+  cursor: pointer; /* Đổi con trỏ chuột thành hình cách nếu di chuột vào nút */
+  transition: background-color 0.3s; /* Hiệu ứng chuyển đổi màu nền khi hover */
+}
+
+.btn:hover {
+  background-color: #007bb5; /* Màu nền khi hover */
 }
 .navbar {
   background-color: #333; /* Màu nền của thanh điều hướng */
@@ -150,7 +230,8 @@ body {
 }
 
 .sider-items{
-  font-size: 25px;
+  font-style: italic ;
+  font-size: 20px;
 }
 
 
@@ -181,3 +262,39 @@ button[type="submit"]:hover {
   background-color: #0056b3;
 }
 
+/* get me of admin */
+.admin-name{
+  color: white;
+}
+
+.admin-info-container {
+  position: relative;
+}
+
+.admin-info-header {
+  display: flex;
+  align-items: center;
+}
+
+.admin-info-content {
+  display: none;
+  position: absolute;
+  top: calc(85% + 8px);
+  left: 30%;
+  transform: translateX(-50%);
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.admin-info-container:hover .admin-info-content {
+  display: block;
+  background-color: #0056b3;
+
+}
+
+.logout-button{
+  width: 60px;
+  height: 20px;
+  margin-left: 150px;
+}

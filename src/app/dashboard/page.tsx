@@ -1,5 +1,7 @@
 'use client'
 import {
+    CoffeeOutlined,
+    HomeOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
     UploadOutlined,
@@ -9,20 +11,16 @@ import {
 import { Avatar, Col, Layout, Menu, Row } from 'antd';
 import React, { useState } from 'react';
 import FoodList from '@/components/food';
-import { useRouter } from "next/navigation";
+import AdminInfo from '@/components/adminInfo';
 
 
 const { Header, Sider, Content } = Layout;
 const App = () => {
     const [collapsed, setCollapsed] = useState(false);
     const [selectedKey, setSelectedKey] = useState('1');
-    const router = useRouter();
 
 
-    const handleLogout = () => {
-        localStorage.removeItem('userToken');
-        router.push('/login'); // Redirect to login page after logout
-      };
+
     const handleMenuClick = (e: any) => {
         setSelectedKey(e.key);
     };
@@ -41,18 +39,18 @@ const App = () => {
                     items={[
                         {
                             key: '1',
-                            icon: <UserOutlined />,
-                            label: 'nav 1',
+                            icon: <CoffeeOutlined />,
+                            label: 'List of Foods',
                         },
                         {
                             key: '2',
-                            icon: <VideoCameraOutlined />,
-                            label: 'nav 2',
+                            icon: <HomeOutlined />,
+                            label: 'List of Stores',
                         },
                         {
                             key: '3',
-                            icon: <UploadOutlined />,
-                            label: 'nav 3',
+                            icon: <UserOutlined />,
+                            label: 'List of Users',
                         },
                     ]}
                 />
@@ -73,9 +71,7 @@ const App = () => {
                         </Col>
                         <Col md={6}>
                             <div>
-                                <Avatar size='default' icon={<UserOutlined />}></Avatar>
-                                <span style={{ color: 'white' }}>Nguyen Ba Long</span>
-                                <button onClick={handleLogout}>Logout</button>
+                                <AdminInfo/>
                             </div>
 
                         </Col>
