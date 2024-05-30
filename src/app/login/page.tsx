@@ -26,7 +26,7 @@ const Home = () => {
       localStorage.setItem('userToken', token);
       alert("Login successful!" + response.data.token);
       // Viet api admin get /me de lay info cua admin hien tai
-      router.push('/dashboard');
+      router.push('/');
     } catch (error) {
       if (axios.isAxiosError(error)) {
         alert("Invalid username or password");

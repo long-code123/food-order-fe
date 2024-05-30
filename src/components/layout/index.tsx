@@ -3,23 +3,28 @@ import Head from 'next/head'
 import { LayoutWrapper, ContentWrapper, LogoWrapper } from '@/components/wrapper'
 import styled from 'styled-components'
 import Link from 'next/link'
-
-
 import {
+    BarsOutlined,
     CoffeeOutlined,
+    CommentOutlined,
+    DollarOutlined,
+    FileDoneOutlined,
+    GiftOutlined,
     HomeOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
+    TruckOutlined,
     UserOutlined,
+    WechatOutlined,
 } from '@ant-design/icons';
 import { Avatar, Col, Layout, Menu } from 'antd';
 import React, { memo, useState,ReactNode ,useEffect} from 'react';
 import FoodList from '@/components/food';
-import AdminInfo from '@/components/adminInfo';
 import UserDropDown from './user-dropdown'
-
-
 import type { MenuProps } from 'antd';
+import { Admin, fetchAdminInfo } from '@/api/adminAPI';
+import { useRouter } from 'next/navigation';
+
 
 const { Header, Sider, Content,Footer } = Layout;
 const LogoName = styled.span`
@@ -38,14 +43,39 @@ type IProps = {
 const App = memo(({ title, activeMenuKey, children}:IProps) => {
     const [collapsed, setCollapsed] = useState(false);
     const [selectedKey, setSelectedKey] = useState(activeMenuKey);
+    const [admin, setAdmin] = useState<Admin | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await fetchAdminInfo();
+                setAdmin(data);
+            } catch (error: any) {
+                setError(error.message);
+                console.error("Error fetching admin info:", error);
+            }
+        };
 
+        fetchData();
+    }, []);
+    
     const handleMenuClick = (e: any) => {
         setSelectedKey(e.key);
     };
     useEffect(() => {
 
 	}, [])
+
+    if (error) {
+        return <p>Error: {error}</p>;
+    }
+
+    if (!admin) {
+        return <p>Loading...</p>;
+    }
+
+
     return (
         <LayoutWrapper>
             <Head>
@@ -74,7 +104,7 @@ const App = memo(({ title, activeMenuKey, children}:IProps) => {
               <img src='https://upload.wikimedia.org/wikipedia/en/thumb/1/12/Grab_%28application%29_logo.svg/2560px-Grab_%28application%29_logo.svg.png' />
             </LogoWrapper>
           </div>
-          <UserDropDown username="Tuấn Cám" avatar="https://lh3.googleusercontent.com/ogw/ADGmqu_t6ocQYu86ewBqgpoKp35oKKv8l98N6RpyzL_L=s32-c-mo" />
+          <UserDropDown username={admin.adminName} avatar="https://lh3.googleusercontent.com/ogw/ADGmqu_t6ocQYu86ewBqgpoKp35oKKv8l98N6RpyzL_L=s32-c-mo" />
         </Header>
             <Layout style={{ marginTop: '1px' }}>
                 <Sider theme='light' width={200} trigger={null} collapsible collapsed={collapsed}>
@@ -102,9 +132,29 @@ const App = memo(({ title, activeMenuKey, children}:IProps) => {
                             label: <Link href="/stores">Stores</Link>,
                         },
                         {
+                            key: 'categories',
+                            icon: <BarsOutlined />,
+                            label: <Link href="/categories">Categories</Link>,
+                        },
+                        {
                             key: 'shippers',
-                            icon: <UserOutlined />,
+                            icon: <TruckOutlined />,
                             label: <Link href="/shippers">Shippers</Link>,
+                        },
+                        {
+                            key: 'users',
+                            icon: <UserOutlined />,
+                            label: <Link href="/users">Users</Link>,
+                        },
+                        {
+                            key: 'admins',
+                            icon: <UserOutlined />,
+                            label: <Link href="/admins">Admins</Link>,
+                        },
+                        {
+                            key: 'vouchers',
+                            icon: <GiftOutlined />,
+                            label: <Link href="/vouchers">Vouchers</Link>,
                         },
                     ]}
                 />

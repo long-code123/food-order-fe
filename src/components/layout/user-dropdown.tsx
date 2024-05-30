@@ -1,8 +1,10 @@
 // export const name: string = 'user-dropdown';
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Menu, Dropdown } from 'antd'
 import { LogoutOutlined, DownOutlined, EditOutlined } from '@ant-design/icons'
+import { useRouter } from 'next/navigation'
+import { Admin, fetchAdminInfo } from '@/api/adminAPI'
 const Wrapper = styled.a`
   display: flex;
   align-items: center;
@@ -23,23 +25,55 @@ type IUserProps = {
     avatar: string
 }
 
-const menu: any = (
-    <Menu>
-        <Menu.Item>
-            <a target='_blank' rel='noopener noreferrer'>
-                <EditOutlined />
-                Đổi mật khẩu
-            </a>
-        </Menu.Item>
-        <Menu.Item>
-            <a onClick={() => console.log("logout")} target='_blank' rel='noopener noreferrer'>
-                <LogoutOutlined />
-                Đăng Xuất
-            </a>
-        </Menu.Item>
-    </Menu>
-)
 const UserDropDown: React.FC<IUserProps> = ({ username, avatar }: IUserProps) => {
+    const router = useRouter();
+    const [admin, setAdmin] = useState<Admin | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await fetchAdminInfo();
+                setAdmin(data);
+            } catch (error: any) {
+                setError(error.message);
+                console.error("Error fetching admin info:", error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+
+    const handleLogout = () => {
+        localStorage.removeItem('userToken');
+        router.push('/login');
+    };
+
+    const menu: any = (
+        <Menu>
+            <Menu.Item>
+                <a target='_blank' rel='noopener noreferrer'>
+                    <EditOutlined />
+                    Role: {admin?.role}
+                </a>
+            </Menu.Item>
+            <Menu.Item>
+                <a target='_blank' rel='noopener noreferrer'>
+                    <EditOutlined />
+                    Đổi mật khẩu
+                </a>
+            </Menu.Item>
+            <Menu.Item>
+                <a onClick={handleLogout} target='_blank' rel='noopener noreferrer'>
+                    <LogoutOutlined />
+                    Đăng Xuất
+                </a>
+            </Menu.Item>
+        </Menu>
+    )
+
+
     return (
         <Dropdown overlay={menu}>
             <Wrapper className='ant-dropdown-link' href='#'>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchAdminInfo, Admin } from "@/app/api/adminAPI";
+import { fetchAdminInfo, Admin } from "@/api/adminAPI";
 import { Avatar } from 'antd';
 import { UserOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";

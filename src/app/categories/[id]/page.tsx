@@ -1,10 +1,11 @@
 'use client'
-import { Food, createFood, deleteFood, fetchFoods, updateFood } from '@/api/foodAPI';
-import AppLayout from '@/components/layout';
 import { useEffect, useState } from 'react';
-import { Button, Card, Form, Input, Modal, Popconfirm, Space, Table, Tag, message } from 'antd';
-import type { TableProps } from 'antd';
+import AppLayout from '@/components/layout';
+import { Food, createFood, deleteFood, fetchFoodsByCategory, updateFood } from '@/api/foodAPI';
 import { Admin, fetchAdminInfo } from '@/api/adminAPI';
+import { Button, Card, Form, Input, Modal, Popconfirm, Space, Table, TableProps, message } from 'antd';
+import { fetchCategories } from '@/api/categoryAPI';
+import BreadCrumb from '@/components/breadcrumb';
 
 interface EditFoodForm {
   foodName: string;
@@ -13,63 +14,40 @@ interface EditFoodForm {
   foodImage: string;
 }
 
-export default function Home() {
+const ViewDetailCategory = ({ params }: { params: { id: string } }) => {
   const [foods, setFoods] = useState<Food[]>([]);
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [editingFood, setEditingFood] = useState<Food | null>(null);
-  const [isCreateModalVisible, setIsCreateModalVisible] = useState<boolean>(false); // Thêm state mới
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState<boolean>(false);
-  const [newFood, setNewFood] = useState<Partial<Food>>({
-    foodName: "",
-    price: 0,
-    description: "",
-    foodImage: ""
-  });
+  const [selectedCategoryName, setSelectedCategoryName] = useState('');
+
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchFoods = async () => {
       try {
-        const data = await fetchFoods();
-        setFoods(data);
+        const categoryId = parseInt(params.id);
+        const fetchedFoods = await fetchFoodsByCategory(categoryId);
+        setFoods(fetchedFoods);
         const dataAdmin = await fetchAdminInfo();
         setAdmin(dataAdmin);
+        const dataCategory = await fetchCategories();
+        const selectedCategory = dataCategory.find(category => category.categoryId === categoryId)
+        if(selectedCategory){
+          setSelectedCategoryName(selectedCategory.categoryName)
+        }
+        console.log(selectedCategory)
       } catch (error) {
-        console.error("Error fetching:", error);
+        console.error('Error fetching foods:', error);
       }
     };
-    fetchData();
-  }, []);
 
+    fetchFoods();
+  }, [params.id]);
 
-
-  const [createForm] = Form.useForm();
-
-  const handleOpenCreateModal = () => {
-    setIsCreateModalVisible(true);
-  }
-
-  const handleCloseCreateModal = () => {
-    setIsCreateModalVisible(false)
-  }
-
-  const handleCreateFood = async () => {
-    try {
-      const createdFood = await createFood(newFood);
-      console.log("Food created successfully:", createdFood);
-      const updatedFoods = await fetchFoods();
-      setFoods(updatedFoods);
-      setIsCreateModalVisible(false) ;
-      createForm.resetFields();
-      message.success("Food created successfully!");
-    } catch (error) {
-      console.error("Error creating food:", error);
-      setError("Failed to create food");
-    }
-  };
 
   const [editForm] = Form.useForm();
-
 
   const handleOpenModal = () => {
     setIsUpdateModalVisible(true);
@@ -88,8 +66,12 @@ export default function Home() {
     try {
       const values: EditFoodForm = await editForm.validateFields(); // Lấy dữ liệu từ form
       await updateFood(editingFood!.foodId, values);
-      const updatedFoods = await fetchFoods();
-      setFoods(updatedFoods);
+      const updatedFoods = [...foods]; // Sao chép danh sách foods
+      const index = updatedFoods.findIndex((food) => food.foodId === editingFood!.foodId); // Tìm vị trí của food cần cập nhật
+      if (index !== -1) {
+        updatedFoods[index] = { ...editingFood!, ...values }; // Cập nhật thông tin food trong danh sách
+        setFoods(updatedFoods);
+      }
       setIsUpdateModalVisible(false);
       message.success("Food updated successfully!");
     } catch (error) {
@@ -98,11 +80,10 @@ export default function Home() {
     }
   };
 
-  //Delete Food
   const handleDelete = async (foodId: number) => {
     try {
       await deleteFood(foodId);
-      const updatedFoods = await fetchFoods();
+      const updatedFoods = foods.filter((food) => food.foodId !== foodId); // Loại bỏ food đã xóa khỏi danh sách
       setFoods(updatedFoods);
       message.success("Food deleted successfully!");
     } catch (error) {
@@ -110,6 +91,7 @@ export default function Home() {
       setError("Failed to delete food");
     }
   };
+
 
   const columns: TableProps<Food>['columns'] = [
     {
@@ -162,63 +144,10 @@ export default function Home() {
   ];
 
   return (
-    <AppLayout activeMenuKey="foods">
+    <AppLayout activeMenuKey="categories">
+      <BreadCrumb items={[selectedCategoryName, 'Foods']} />
+
       <Card title="List Foods">
-        {admin?.role === 'super admin' && (
-          <>
-            <Button type="primary" onClick={handleOpenCreateModal}>Create Food</Button>
-            <Modal
-              title="Create Food"
-              visible={isCreateModalVisible}
-              onCancel={handleCloseCreateModal}
-              footer={[
-                <Button key="save" type="primary" onClick={handleCreateFood}>
-                  Save
-                </Button>,
-                <Button key="cancel" onClick={handleCloseCreateModal}>
-                  Cancel
-                </Button>
-              ]}
-            >
-              <Form
-                form={createForm}
-                layout="vertical"
-                onValuesChange={(changedValues, allValues) => {
-                  setNewFood(allValues);
-                }}
-              >
-                <Form.Item
-                  name="foodName"
-                  label="Name"
-                  rules={[{ required: true, message: 'Please enter food name' }]}
-                >
-                  <Input />
-                </Form.Item>
-                <Form.Item
-                  name="price"
-                  label="Price"
-                  rules={[{ required: true, message: 'Please enter price' }]}
-                >
-                  <Input type="number" />
-                </Form.Item>
-                <Form.Item
-                  name="description"
-                  label="Description"
-                  rules={[{ required: true, message: 'Please enter description' }]}
-                >
-                  <Input.TextArea rows={4} />
-                </Form.Item>
-                <Form.Item
-                  name="foodImage"
-                  label="Image URL" // Thêm label cho trường URL hình ảnh
-                  rules={[{ required: true, message: 'Please enter Image URL' }]} // Quy tắc yêu cầu nhập URL
-                >
-                  <Input />
-                </Form.Item>
-              </Form>
-            </Modal>
-          </>
-        )}
         <Table columns={columns} dataSource={foods} pagination={{ pageSize: 5 }} />
       </Card>
       <Modal
@@ -262,12 +191,12 @@ export default function Home() {
             label="Image"
             rules={[{ required: true, message: 'Please enter Image' }]}
           >
-            <Input/>
+            <Input />
           </Form.Item>
         </Form>
       </Modal>
     </AppLayout>
-
   );
-}
+};
 
+export default ViewDetailCategory;

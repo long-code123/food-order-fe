@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { createFood, deleteFood, updateFood, fetchFoods, Food } from "@/app/api/foodAPI";
-import { fetchAdminInfo, Admin } from "@/app/api/adminAPI";
+import { createFood, deleteFood, updateFood, fetchFoods, Food } from "@/api/foodAPI";
+import { fetchAdminInfo, Admin } from "@/api/adminAPI";
 
 
 const FoodList = () => {
