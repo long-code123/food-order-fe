@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { fetchStores } from '@/api/storeAPI';
 import { Reviewstore, fetchReviewByStore } from '@/api/reviewstoreAPI';
 import { Payment, fetchPaymentByStore } from '@/api/paymentAPI';
+import { useAuth } from '@/components/authProvider/authProvider';
 
 interface EditFoodForm {
   foodName: string;
@@ -32,6 +33,7 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
   const [totalPayments, setTotalPayments] = useState<number>(0);
   const [storeEarning, setStoreEarning] = useState<number>(0);
 
+  useAuth();
 
   useEffect(() => {
     const fetchFoods = async () => {

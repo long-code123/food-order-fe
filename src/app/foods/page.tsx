@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Button, Card, Form, Input, Modal, Popconfirm, Space, Table, Tag, message } from 'antd';
 import type { TableProps } from 'antd';
 import { Admin, fetchAdminInfo } from '@/api/adminAPI';
+import { useAuth } from '@/components/authProvider/authProvider';
 
 interface EditFoodForm {
   foodName: string;
@@ -27,6 +28,8 @@ export default function Home() {
     foodImage: ""
   });
 
+  useAuth();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -35,6 +38,7 @@ export default function Home() {
         const dataAdmin = await fetchAdminInfo();
         setAdmin(dataAdmin);
       } catch (error) {
+        
         console.error("Error fetching:", error);
       }
     };

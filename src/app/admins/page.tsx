@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Button, Card, Form, Input, Modal, Popconfirm, Space, Table, message } from 'antd';
 import type { TableProps } from 'antd';
 import { Admin, createAdmin, deleteAdmin, fetchAdminInfo, fetchAdmins, updateAdmin } from '@/api/adminAPI';
+import { useAuth } from '@/components/authProvider/authProvider';
 
 interface EditAdminForm {
     adminName: string;
@@ -24,6 +25,8 @@ export default function Home() {
         password: "",
         role: ""
     });
+
+    useAuth();
 
     useEffect(() => {
         const fetchData = async () => {

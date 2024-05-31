@@ -6,6 +6,7 @@ import { Shipper, createShipper, deleteShipper, fetchShippers, updateShipper } f
 import { Button, Card, Form, Input, Modal, Popconfirm, Space, Table, TableProps, message } from "antd";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/components/authProvider/authProvider";
 
 
 interface EditShipperForm {
@@ -32,6 +33,8 @@ export default function Home() {
     email: "",
     address: ""
   });
+
+  useAuth();
 
   useEffect(() => {
     const fetchData = async () => {

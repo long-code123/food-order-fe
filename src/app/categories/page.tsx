@@ -6,6 +6,7 @@ import { Category, createCategory, deleteCategory, fetchCategories, updateCatego
 import { Button, Card, Form, Input, Modal, Popconfirm, Space, Table, TableProps, message } from "antd";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/components/authProvider/authProvider";
 
 
 interface EditCategoryForm {
@@ -24,6 +25,8 @@ export default function Home() {
         categoryName: "",
         categoryImage: "",
     });
+
+    useAuth();
 
     useEffect(() => {
         const fetchData = async () => {

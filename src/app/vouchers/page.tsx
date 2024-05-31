@@ -2,6 +2,7 @@
 
 import { Admin, fetchAdminInfo } from "@/api/adminAPI";
 import { Voucher, createVoucher, deleteVoucher, fetchVouchers, updateVoucher } from "@/api/voucherAPI";
+import { useAuth } from "@/components/authProvider/authProvider";
 import AppLayout from '@/components/layout';
 import { Button, Card, Form, Input, Modal, Popconfirm, Space, Table, TableProps, message } from "antd";
 import { useEffect, useState } from "react";
@@ -25,6 +26,7 @@ export default function Home() {
         value: 0,
         conditition: "",
     });
+    useAuth();
 
     useEffect(() => {
         const fetchData = async () => {

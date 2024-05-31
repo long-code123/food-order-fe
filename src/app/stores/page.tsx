@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Food, fetchFoodsByStore} from "@/api/foodAPI";
 import Link from "next/link";
 import Breadcrumb from "@/components/breadcrumb";
+import { useAuth } from "@/components/authProvider/authProvider";
 
 
 interface EditStoreForm {
@@ -24,13 +25,13 @@ export default function Home() {
   const [isCreateModalVisible, setIsCreateModalVisible] = useState<boolean>(false); 
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
-
   const [newStore, setNewStore] = useState<Partial<Store>>({
     storeName: "",
     storeImage: "",
     address: ""
   });
+
+  useAuth();
 
   useEffect(() => {
     const fetchData = async () => {

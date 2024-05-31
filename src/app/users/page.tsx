@@ -2,6 +2,7 @@
 
 import { Admin, fetchAdminInfo } from "@/api/adminAPI";
 import { User, deleteUser, fetchUsers, updateUser } from "@/api/userAPI";
+import { useAuth } from "@/components/authProvider/authProvider";
 import AppLayout from '@/components/layout';
 import { Button, Card, Form, Input, Modal, Popconfirm, Space, Table, TableProps, message } from "antd";
 import { useEffect, useState } from "react";
@@ -31,6 +32,8 @@ export default function Home() {
     email: "",
     address: ""
   });
+
+  useAuth();
 
   useEffect(() => {
     const fetchData = async () => {

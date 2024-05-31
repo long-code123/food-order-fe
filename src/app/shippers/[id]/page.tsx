@@ -3,6 +3,7 @@ import { Admin, fetchAdminInfo } from '@/api/adminAPI';
 import { Order, fetchOrderByShipper } from '@/api/orderAPI';
 import { Reviewshipper, deleteReviewshipper, fetchReviewByShipper } from '@/api/reviewshipperAPI';
 import { fetchShippers } from '@/api/shipperAPI';
+import { useAuth } from '@/components/authProvider/authProvider';
 import BreadCrumb from '@/components/breadcrumb';
 import AppLayout from '@/components/layout';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
@@ -20,6 +21,7 @@ const ViewDetailShipper = ({ params }: { params: { id: string } }) => {
     const [shipperEarning, setShipperEarning] = useState<number>(0);
     const [totalOrders, setTotalOrders] = useState<number>(0);
 
+    useAuth();
 
     useEffect(() => {
         const fetchdata = async () => {

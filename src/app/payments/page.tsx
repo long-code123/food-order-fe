@@ -5,6 +5,7 @@ import AppLayout from '@/components/layout';
 import { Payment, createPayment, deletePayment, fetchPayments, updatePayment } from "@/api/paymentAPI";
 import { Button, Card, Form, Input, Modal, Popconfirm, Space, Table, TableProps, message } from "antd";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/components/authProvider/authProvider";
 
 
 interface EditPaymentForm {
@@ -27,6 +28,8 @@ export default function Home() {
         paymentMethod: "",
         paymentStatus: ""
     });
+
+    useAuth();
 
     useEffect(() => {
         const fetchData = async () => {

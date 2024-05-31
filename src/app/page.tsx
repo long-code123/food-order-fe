@@ -3,6 +3,7 @@ import { Order, fetchOrders } from '@/api/orderAPI';
 import { Payment, fetchPayments } from '@/api/paymentAPI';
 import { fetchShippers } from '@/api/shipperAPI';
 import { fetchStores } from '@/api/storeAPI';
+import { useAuth } from '@/components/authProvider/authProvider';
 import AppLayout from '@/components/layout';
 import { DollarCircleOutlined, FileDoneOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons';
 import { Table, Card, Statistic } from 'antd';
@@ -21,7 +22,10 @@ export default function Home() {
   const [totalStore, setTotalStore] = useState(0);
   const [totalPayment, setTotalPayment] = useState(0);
 
+  useAuth();
+  
   useEffect(() => {
+
     const fetchData = async () => {
       try {
         const dataOrder = await fetchOrders();

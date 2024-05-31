@@ -6,6 +6,7 @@ import { Admin, fetchAdminInfo } from '@/api/adminAPI';
 import { Button, Card, Form, Input, Modal, Popconfirm, Space, Table, TableProps, message } from 'antd';
 import { fetchCategories } from '@/api/categoryAPI';
 import BreadCrumb from '@/components/breadcrumb';
+import { useAuth } from '@/components/authProvider/authProvider';
 
 interface EditFoodForm {
   foodName: string;
@@ -23,6 +24,7 @@ const ViewDetailCategory = ({ params }: { params: { id: string } }) => {
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState<boolean>(false);
   const [selectedCategoryName, setSelectedCategoryName] = useState('');
 
+  useAuth();
 
   useEffect(() => {
     const fetchFoods = async () => {
