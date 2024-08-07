@@ -3,10 +3,9 @@ import { useEffect, useState } from 'react';
 import AppLayout from '@/components/layout';
 import { Food, createFood, deleteFood, fetchFoodsByStore, updateFood } from '@/api/foodAPI';
 import { Admin, fetchAdminInfo } from '@/api/adminAPI';
-import { Breadcrumb, Button, Card, Form, Input, Modal, Popconfirm, Space, Statistic, Table, TableProps, message } from 'antd';
+import { Breadcrumb, Button, Card, Form, Input, Modal, Popconfirm, Space, Statistic, Table, TableProps, message, Tabs } from 'antd';
 import BreadCrumb from '@/components/breadcrumb';
-import { HomeOutlined, StarFilled } from '@ant-design/icons';
-import Link from 'next/link';
+import { StarFilled } from '@ant-design/icons';
 import { fetchStores } from '@/api/storeAPI';
 import { Reviewstore, fetchReviewByStore } from '@/api/reviewstoreAPI';
 import { Payment, fetchPaymentByStore } from '@/api/paymentAPI';
@@ -23,9 +22,8 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
   const [foods, setFoods] = useState<Food[]>([]);
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [editingFood, setEditingFood] = useState<Food | null>(null);
-  const [isCreateModalVisible, setIsCreateModalVisible] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedStoreName, setSelectedStoreName] = useState('');
   const [reviewstores, setReviewstores] = useState<Reviewstore[]>([]);
   const [averageRating, setAverageRating] = useState<number>(0);
@@ -111,11 +109,6 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
       setError("Failed to delete food");
     }
   };
-  const breadcrumbItems = [
-    { label: 'Home', link: '/' },
-    { label: 'Stores', link: '/stores' },
-    { label: 'Store Detail' }, // Label của trang hiện tại
-  ];
 
   const columns1: TableProps<Reviewstore>['columns'] = [
     {
@@ -142,7 +135,7 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
           {admin?.role === 'super admin' && (
             <>
               <Popconfirm
-                title="Are you sure to delete this food?"
+                title="Are you sure to delete this review?"
                 onConfirm={() => handleDelete(record.id)}
                 okText="Yes"
                 cancelText="No"
@@ -155,7 +148,6 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
       ),
     },
   ]
-
 
   const columns: TableProps<Food>['columns'] = [
     {
@@ -179,7 +171,7 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
       title: 'Food Image',
       dataIndex: 'foodImage',
       key: 'foodImage',
-      render: (foodImage: string) => <img src={foodImage} style={{ width: '100px', height: '100px' }} />,
+      render: (foodImage: string) => <img src={foodImage} style={{ width: '50px', height: '50px' }} />,
     },
     {
       title: 'Action',
@@ -210,37 +202,46 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
   return (
     <AppLayout activeMenuKey="store">
       <BreadCrumb items={[selectedStoreName, 'Detail']} />
-      <Card title="Information">
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', marginRight: '100px', marginLeft: '50px' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ marginBottom: '10px', fontWeight: 'bold', fontSize: '16px' }}>
-              Average Rating
-            </div>
-            <Statistic
-              title=""
-              value={averageRating}
-              precision={1}
-              suffix={<Space><StarFilled style={{ color: '#ffc107' }} /></Space>}
-              style={{ fontSize: '20px' }}
-            />
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ marginBottom: '10px', fontWeight: 'bold', fontSize: '16px' }}>
-              Store Earning
-            </div>
-            <Statistic title="" value={storeEarning} suffix="VND" />
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ marginBottom: '10px', fontWeight: 'bold', fontSize: '16px' }}>
-              Total Payments
-            </div>
-            <Statistic title="" value={totalPayments} />
-          </div>
-        </div>
-
-        <Table columns={columns1} dataSource={reviewstores} pagination={{ pageSize: 5 }} />
-        <p style={{ fontWeight: 'bold', fontSize: '20px' }}>List of Foods</p>
-        <Table columns={columns} dataSource={foods} pagination={{ pageSize: 5 }} />
+      <Card>
+        <Tabs defaultActiveKey="1">
+          <Tabs.TabPane tab="Information" key="1">
+            <Card title="Information">
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', marginRight: '100px', marginLeft: '50px' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ marginBottom: '10px', fontWeight: 'bold', fontSize: '16px' }}>
+                    Average Rating
+                  </div>
+                  <Statistic
+                    title=""
+                    value={averageRating}
+                    precision={1}
+                    suffix={<Space><StarFilled style={{ color: '#ffc107' }} /></Space>}
+                    style={{ fontSize: '20px' }}
+                  />
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ marginBottom: '10px', fontWeight: 'bold', fontSize: '16px' }}>
+                    Store Earning
+                  </div>
+                  <Statistic title="" value={storeEarning} suffix="VND" />
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ marginBottom: '10px', fontWeight: 'bold', fontSize: '16px' }}>
+                    Total Payments
+                  </div>
+                  <Statistic title="" value={totalPayments} />
+                </div>
+              </div>
+              <Table columns={columns1} dataSource={reviewstores} pagination={{ pageSize: 5 }} />
+            </Card>
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="List Food" key="2">
+            <Card>
+              <p style={{ fontWeight: 'bold', fontSize: '20px' }}>List of Foods</p>
+              <Table columns={columns} dataSource={foods} pagination={{ pageSize: 5 }} />
+            </Card>
+          </Tabs.TabPane>
+        </Tabs>
       </Card>
       <Modal
         title="Edit Food"
@@ -253,7 +254,6 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
           <Button key="cancel" onClick={handleCloseModal}>
             Cancel
           </Button>,
-
         ]}
       >
         <Form form={editForm} layout="vertical">

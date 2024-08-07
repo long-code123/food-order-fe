@@ -137,7 +137,7 @@ export default function Home() {
       title: 'Food Image',
       dataIndex: 'foodImage',
       key: 'foodImage',
-      render: (foodImage: string) => <img src={foodImage} style={{ width: '100px', height: '100px' }} />,
+      render: (foodImage: string) => <img src={foodImage} style={{ width: '50px', height: '50px' }} />,
     },
     {
       title: 'Action',

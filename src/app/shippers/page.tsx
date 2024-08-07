@@ -102,7 +102,7 @@ export default function Home() {
       title: 'Shipper Image',
       dataIndex: 'shipperImage',
       key: 'shipperImage',
-      render: (shipperImage: string) => <img src={shipperImage} style={{ width: '100px', height: '100px' }} />,
+      render: (shipperImage: string) => <img src={shipperImage} style={{ width: '50px', height: '50px' }} />,
     },
     {
       title: 'Date Of Birth',

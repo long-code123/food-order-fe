@@ -101,7 +101,7 @@ export default function Home() {
       title: 'User Image',
       dataIndex: 'userImage',
       key: 'userImage',
-      render: (userImage: string) => <img src={userImage} style={{ width: '100px', height: '100px' }} />,
+      render: (userImage: string) => <img src={userImage} style={{ width: '50px', height: '50px' }} />,
     },
     {
       title: 'Date Of Birth',

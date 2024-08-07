@@ -119,7 +119,7 @@ export default function Home() {
             title: 'Category Image',
             dataIndex: 'categoryImage',
             key: 'categoryImage',
-            render: (categoryImage: string) => <img src={categoryImage} style={{ width: '100px', height: '100px' }} />,
+            render: (categoryImage: string) => <img src={categoryImage} style={{ width: '50px', height: '50px' }} />,
         },
         {
             title: 'Action',

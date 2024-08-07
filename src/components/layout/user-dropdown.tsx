@@ -58,16 +58,16 @@ const UserDropDown: React.FC<IUserProps> = ({ username, avatar }: IUserProps) =>
                     Role: {admin?.role}
                 </a>
             </Menu.Item>
-            <Menu.Item>
+            {/* <Menu.Item>
                 <a target='_blank' rel='noopener noreferrer'>
                     <EditOutlined />
                     Đổi mật khẩu
                 </a>
-            </Menu.Item>
+            </Menu.Item> */}
             <Menu.Item>
                 <a onClick={handleLogout} target='_blank' rel='noopener noreferrer'>
                     <LogoutOutlined />
-                    Đăng Xuất
+                    Logout
                 </a>
             </Menu.Item>
         </Menu>

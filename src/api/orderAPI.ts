@@ -1,6 +1,9 @@
 export interface Order {
     id: number;
     deliveryTime: string;
+    userId: number;
+    shipperId: number;
+    status: string;
 }
 
 export const fetchOrders = async (): Promise<Order[]> => {

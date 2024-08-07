@@ -125,7 +125,7 @@ export default function Home() {
       title: 'Store Image',
       dataIndex: 'storeImage',
       key: 'storeImage',
-      render: (storeImage: string) => <img src={storeImage} style={{ width: '100px', height: '100px' }} />,
+      render: (storeImage: string) => <img src={storeImage} style={{ width: '50px', height: '50px' }} />,
     },
     
     {

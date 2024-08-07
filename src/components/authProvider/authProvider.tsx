@@ -15,7 +15,11 @@ export const useAuth = () => {
     const decodedToken: { exp: number } = jwtDecode(token);
     const expirationTime = decodedToken.exp;
     const currentTime = Math.floor(Date.now() / 1000);
-    alert("Time current : " +  currentTime + "\n" +  "Time expiration: " + expirationTime)
+
+    const expirationDate = new Date(expirationTime * 1000).toLocaleString();
+    const currentDate = new Date(currentTime * 1000).toLocaleString();
+
+    // alert(`Time current: ${currentDate}\nTime expiration: ${expirationDate}`);
     if (currentTime >= expirationTime) {
       localStorage.removeItem('userToken');
       router.push('/login');
