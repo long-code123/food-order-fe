@@ -3,8 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { json } from "stream/consumers";
-
+import loginAPI from "@/api/loginAPI";
 const Home = () => {
   const [adminName, setAdminName] = useState('');
   const [password, setPassword] = useState('');
@@ -17,11 +16,12 @@ const Home = () => {
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/api/v1/admin/login", {
+      const response:any = loginAPI.login({
         adminName, // Ensure the keys match your backend's expected keys
         password
       });
-      const token = response.data.token;
+      const token = ""
+      //response.data.token;
       setToken(token);
       localStorage.setItem('userToken', token);
       alert("Login successful!" + response.data.token);
