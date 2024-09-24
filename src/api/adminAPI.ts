@@ -1,4 +1,4 @@
-// adminAPI.ts
+import { getMainApi } from "@/config";
 
 export interface Admin {
   adminId: number;
@@ -8,6 +8,9 @@ export interface Admin {
   role: string;
 }
 
+const c = (path: string = ''): string => {
+  return getMainApi().admin + path;
+};
 
 export const fetchAdmins = async (): Promise<Admin[]> => {
   const token = localStorage.getItem('userToken');
@@ -15,7 +18,7 @@ export const fetchAdmins = async (): Promise<Admin[]> => {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch("http://localhost:8000/api/v1/admin", {
+    const res = await fetch(c('/'), {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -38,7 +41,7 @@ export const createAdmin = async (adminData: Partial<Admin>): Promise<Admin> => 
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch("http://localhost:8000/api/v1/admin/register", {
+    const res = await fetch(c("/register"), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -64,7 +67,7 @@ export const updateAdmin = async (adminId: number, adminData: Partial<Admin>): P
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/admin/${adminId}`, {
+    const res = await fetch(c(`/${adminId}`), {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -90,7 +93,7 @@ export const deleteAdmin = async (adminId: number): Promise<void> => {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/admin/${adminId}`, {
+    const res = await fetch(c(`${adminId}`), {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -111,7 +114,7 @@ export const fetchAdminInfo = async (): Promise<Admin> => {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch("http://localhost:8000/api/v1/admin/me", {
+    const res = await fetch(c("/me"), {
       headers: {
         'Authorization': `Bearer ${token}`
       }

@@ -1,15 +1,22 @@
+import { getMainApi } from "@/config";
+
 export interface Reviewfood {
     rating: string;
     comment: string;
   }
   
+  const c = (path: string = ''): string => {
+    return getMainApi().payment + path;
+  };
+  
+
   export const fetchReviewfoods = async (): Promise<Reviewfood[]> => {
     const token = localStorage.getItem('userToken');
     if (!token) {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch("http://localhost:8000/api/v1/reviewfoods", {
+      const res = await fetch(c("/"), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -31,7 +38,7 @@ export interface Reviewfood {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/reviewfoods/${reviewfoodId}`, {
+      const res = await fetch(c(`/${reviewfoodId}`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

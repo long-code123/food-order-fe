@@ -1,3 +1,5 @@
+import { getMainApi } from "@/config";
+
 export interface Payment {
   paymentId: number;
   paymentDate: string;
@@ -6,13 +8,18 @@ export interface Payment {
   paymentStatus: string;
 }
 
+const c = (path: string = ''): string => {
+  return getMainApi().payment + path;
+};
+
+
 export const fetchPayments = async (): Promise<Payment[]> => {
   const token = localStorage.getItem('userToken');
   if (!token) {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch("http://localhost:8000/api/v1/payments", {
+    const res = await fetch(c("/"), {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -35,7 +42,7 @@ export const createPayment = async (paymentData: Partial<Payment>): Promise<Paym
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch("http://localhost:8000/api/v1/payments", {
+    const res = await fetch(c("/"), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -61,7 +68,7 @@ export const updatePayment = async (paymentId: number, paymentData: Partial<Paym
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/payments/${paymentId}`, {
+    const res = await fetch(c(`/${paymentId}`), {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -87,7 +94,7 @@ export const deletePayment = async (paymentId: number): Promise<void> => {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/payments/${paymentId}`, {
+    const res = await fetch(c(`/${paymentId}`), {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -107,7 +114,7 @@ export const fetchPaymentByStore = async (storeId: number): Promise<Payment[]> =
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/stores/${storeId}/payments`, {
+    const res = await fetch(getMainApi().paymentbystore(storeId), {
       headers: {
         'Authorization': `Bearer ${token}`
       }

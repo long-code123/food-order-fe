@@ -1,3 +1,5 @@
+import { getMainApi } from "@/config";
+
 export interface Shipper {
     shipperId: number;
     shipperName: string;
@@ -9,13 +11,18 @@ export interface Shipper {
     password: string;
   }
   
+  const c = (path: string = ''): string => {
+    return getMainApi().shippers + path;
+  };
+  
+
   export const fetchShippers = async (): Promise<Shipper[]> => {
     const token = localStorage.getItem('userToken');
     if (!token) {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch("http://localhost:8000/api/v1/shippers", {
+      const res = await fetch(c("/"), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -39,7 +46,7 @@ export interface Shipper {
     }
     try {
       console.log(JSON.stringify(shipperData));
-      const res = await fetch("http://localhost:8000/api/v1/shippers", {
+      const res = await fetch(c("/"), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,7 +73,7 @@ export interface Shipper {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/shippers/${shipperId}`, {
+      const res = await fetch(c(`/${shipperId}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +99,7 @@ export interface Shipper {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/shippers/${shipperId}`, {
+      const res = await fetch(c(`/${shipperId}`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

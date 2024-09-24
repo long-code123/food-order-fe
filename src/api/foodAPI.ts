@@ -1,3 +1,5 @@
+import { getMainApi } from "@/config";
+
 export interface Food {
   foodId: number;
   foodName: string;
@@ -7,17 +9,20 @@ export interface Food {
   categoryId: number;
   storeId: number;
 }
+const c = (path: string = ""): string => {
+  return getMainApi().food + path;
+};
 
 export const fetchFoods = async (): Promise<Food[]> => {
-  const token = localStorage.getItem('userToken');
+  const token = localStorage.getItem("userToken");
   if (!token) {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch("http://localhost:8000/api/v1/foods", {
+    const res = await fetch(c("/"), {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
     if (res.ok) {
       const data = await res.json();
@@ -32,18 +37,18 @@ export const fetchFoods = async (): Promise<Food[]> => {
 };
 
 export const createFood = async (foodData: Partial<Food>): Promise<Food> => {
-  const token = localStorage.getItem('userToken');
+  const token = localStorage.getItem("userToken");
   if (!token) {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch("http://localhost:8000/api/v1/foods", {
-      method: 'POST',
+    const res = await fetch(c("/"), {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(foodData)
+      body: JSON.stringify(foodData),
     });
     if (res.ok) {
       const data = await res.json();
@@ -57,19 +62,22 @@ export const createFood = async (foodData: Partial<Food>): Promise<Food> => {
   }
 };
 
-export const updateFood = async (foodId: number, foodData: Partial<Food>): Promise<Food> => {
-  const token = localStorage.getItem('userToken');
+export const updateFood = async (
+  foodId: number,
+  foodData: Partial<Food>
+): Promise<Food> => {
+  const token = localStorage.getItem("userToken");
   if (!token) {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/foods/${foodId}`, {
-      method: 'PUT', // Sử dụng method PUT để cập nhật dữ liệu
+    const res = await fetch(c(`/${foodId}`), {
+      method: "PUT", // Sử dụng method PUT để cập nhật dữ liệu
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(foodData)
+      body: JSON.stringify(foodData),
     });
     if (res.ok) {
       const data = await res.json();
@@ -84,16 +92,16 @@ export const updateFood = async (foodId: number, foodData: Partial<Food>): Promi
 };
 
 export const deleteFood = async (foodId: number): Promise<void> => {
-  const token = localStorage.getItem('userToken');
+  const token = localStorage.getItem("userToken");
   if (!token) {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/foods/${foodId}`, {
-      method: 'DELETE', // Sử dụng method DELETE để xóa dữ liệu
+    const res = await fetch(c(`/${foodId}`), {
+      method: "DELETE", // Sử dụng method DELETE để xóa dữ liệu
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
     if (!res.ok) {
       throw new Error("Failed to delete food");
@@ -104,15 +112,15 @@ export const deleteFood = async (foodId: number): Promise<void> => {
   }
 };
 export const fetchFoodsByStore = async (storeId: number): Promise<Food[]> => {
-  const token = localStorage.getItem('userToken');
+  const token = localStorage.getItem("userToken");
   if (!token) {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/stores/${storeId}/foods`, {
+    const res = await fetch(getMainApi().foodbystore(storeId), {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
     if (res.ok) {
       const data = await res.json();
@@ -126,16 +134,18 @@ export const fetchFoodsByStore = async (storeId: number): Promise<Food[]> => {
   }
 };
 
-export const fetchFoodsByCategory = async (categoryId: number): Promise<Food[]> => {
-  const token = localStorage.getItem('userToken');
+export const fetchFoodsByCategory = async (
+  categoryId: number
+): Promise<Food[]> => {
+  const token = localStorage.getItem("userToken");
   if (!token) {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/categories/${categoryId}/foods`, {
+    const res = await fetch(getMainApi().foodbycategory(categoryId), {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
     if (res.ok) {
       const data = await res.json();

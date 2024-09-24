@@ -19,7 +19,6 @@ const ViewDetailCategory = ({ params }: { params: { id: string } }) => {
   const [foods, setFoods] = useState<Food[]>([]);
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [editingFood, setEditingFood] = useState<Food | null>(null);
-  const [isCreateModalVisible, setIsCreateModalVisible] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState<boolean>(false);
   const [selectedCategoryName, setSelectedCategoryName] = useState('');
@@ -30,6 +29,7 @@ const ViewDetailCategory = ({ params }: { params: { id: string } }) => {
     const fetchFoods = async () => {
       try {
         const categoryId = parseInt(params.id);
+        console.log(categoryId);
         const fetchedFoods = await fetchFoodsByCategory(categoryId);
         setFoods(fetchedFoods);
         const dataAdmin = await fetchAdminInfo();

@@ -1,8 +1,15 @@
+import { getMainApi } from "@/config";
+
 export interface Reviewstore {
   id: number;
   rating: string;
   comment: string;
 }
+
+const c = (path: string = ''): string => {
+  return getMainApi().reviewstore + path;
+};
+
 
 export const fetchReviewstores = async (): Promise<Reviewstore[]> => {
   const token = localStorage.getItem('userToken');
@@ -10,7 +17,7 @@ export const fetchReviewstores = async (): Promise<Reviewstore[]> => {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch("http://localhost:8000/api/v1/reviewstores", {
+    const res = await fetch(c("/"), {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -32,7 +39,7 @@ export const deleteReviewstore = async (reviewstoreId: number): Promise<void> =>
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/reviewstores/${reviewstoreId}`, {
+    const res = await fetch(c(`/${reviewstoreId}`), {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -53,7 +60,7 @@ export const fetchReviewByStore = async (storeId: number): Promise<Reviewstore[]
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/stores/${storeId}/reviews`, {
+    const res = await fetch(getMainApi().reviewbystore(storeId), {
       headers: {
         'Authorization': `Bearer ${token}`
       }

@@ -1,3 +1,5 @@
+import { getMainApi } from "@/config";
+
 export interface Store {
     storeId: number;
     storeName: string;
@@ -5,13 +7,18 @@ export interface Store {
     address: string
   }
   
+  const c = (path: string = ''): string => {
+    return getMainApi().store + path;
+  };
+  
+
   export const fetchStores = async (): Promise<Store[]> => {
     const token = localStorage.getItem('userToken');
     if (!token) {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch("http://localhost:8000/api/v1/stores", {
+      const res = await fetch(c("/"), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -34,7 +41,7 @@ export interface Store {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch("http://localhost:8000/api/v1/stores", {
+      const res = await fetch(c("/"), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +67,7 @@ export interface Store {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/stores/${storeId}`, {
+      const res = await fetch(c(`/${storeId}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -86,7 +93,7 @@ export interface Store {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/stores/${storeId}`, {
+      const res = await fetch(c(`/${storeId}`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

@@ -1,3 +1,5 @@
+import { getMainApi } from "@/config";
+
 export interface Order {
     id: number;
     deliveryTime: string;
@@ -6,13 +8,18 @@ export interface Order {
     status: string;
 }
 
+const c = (path: string = ''): string => {
+  return getMainApi().order + path;
+};
+
+
 export const fetchOrders = async (): Promise<Order[]> => {
     const token = localStorage.getItem('userToken');
     if (!token) {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch("http://localhost:8000/api/v1/orders", {
+      const res = await fetch(c("/"), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -36,7 +43,7 @@ export const fetchOrderByShipper = async (shipperId: number): Promise<Order[]> =
         throw new Error("Token is required");
     }
     try {
-        const res = await fetch(`http://localhost:8000/api/v1/shippers/${shipperId}/orders`, {
+        const res = await fetch(getMainApi().orderbyshipper(shipperId), {
             headers: {
                 'Authorization': `Bearer ${token}`
             }

@@ -1,8 +1,14 @@
+import { getMainApi } from "@/config";
+
 export interface Reviewshipper {
   id: number;
   rating: string;
   comment: string;
 }
+
+const c = (path: string = ''): string => {
+  return getMainApi().reviewshipper + path;
+};
 
 export const fetchReviewshippers = async (): Promise<Reviewshipper[]> => {
   const token = localStorage.getItem('userToken');
@@ -10,7 +16,7 @@ export const fetchReviewshippers = async (): Promise<Reviewshipper[]> => {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch("http://localhost:8000/api/v1/reviewshippers", {
+    const res = await fetch(c("/"), {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -32,7 +38,7 @@ export const deleteReviewshipper = async (reviewshipperId: number): Promise<void
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/reviewshippers/${reviewshipperId}`, {
+    const res = await fetch(c(`/${reviewshipperId}`), {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -52,7 +58,7 @@ export const fetchReviewByShipper = async (shipperId: number): Promise<Reviewshi
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/shippers/${shipperId}/review`, {
+    const res = await fetch(getMainApi().reviewbyshipper(shipperId), {
       headers: {
         'Authorization': `Bearer ${token}`
       }

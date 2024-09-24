@@ -4,6 +4,9 @@ import axios from "axios";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { json } from "stream/consumers";
+import { getMainApi } from "@/config";
+
+
 
 const Home = () => {
   const [adminName, setAdminName] = useState('');
@@ -17,14 +20,14 @@ const Home = () => {
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/api/v1/admin/login", {
+      const response = await axios.post(getMainApi().login, {
         adminName, // Ensure the keys match your backend's expected keys
         password
       });
       const token = response.data.token;
       setToken(token);
       localStorage.setItem('userToken', token);
-      alert("Login successful!" + response.data.token);
+      alert("Login successful!");
       // Viet api admin get /me de lay info cua admin hien tai
       router.push('/');
     } catch (error) {

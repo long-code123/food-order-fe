@@ -1,9 +1,16 @@
+import { getMainApi } from "@/config";
+
 export interface Voucher {
     voucherId: number;
     description: string;
     value: number;
     conditition: string;
   }
+
+  const c = (path: string = ''): string => {
+    return getMainApi().voucher + path;
+  };
+  
   
   export const fetchVouchers = async (): Promise<Voucher[]> => {
     const token = localStorage.getItem('userToken');
@@ -11,7 +18,7 @@ export interface Voucher {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch("http://localhost:8000/api/v1/vouchers", {
+      const res = await fetch(c("/"), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -34,7 +41,7 @@ export interface Voucher {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch("http://localhost:8000/api/v1/vouchers", {
+      const res = await fetch(c("/"), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +67,7 @@ export interface Voucher {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/vouchers/${voucherId}`, {
+      const res = await fetch(c(`/${voucherId}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -86,7 +93,7 @@ export interface Voucher {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/vouchers/${voucherId}`, {
+      const res = await fetch(c(`/${voucherId}`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

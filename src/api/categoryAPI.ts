@@ -1,8 +1,15 @@
+import { getMainApi } from "@/config";
+
 export interface Category {
   categoryId: number;
   categoryName: string;
   categoryImage: string;
 }
+
+const c = (path: string = ''): string => {
+  return getMainApi().category + path;
+};
+
 
 export const fetchCategories = async (): Promise<Category[]> => {
   const token = localStorage.getItem('userToken');
@@ -10,7 +17,7 @@ export const fetchCategories = async (): Promise<Category[]> => {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch("http://localhost:8000/api/v1/categories", {
+    const res = await fetch(c("/"), {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -33,7 +40,7 @@ export const createCategory = async (categoryData: Partial<Category>): Promise<C
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch("http://localhost:8000/api/v1/categories", {
+    const res = await fetch(c("/"), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -59,7 +66,7 @@ export const updateCategory = async (categoryId: number, categoryData: Partial<C
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/categories/${categoryId}`, {
+    const res = await fetch(c(`/${categoryId}`), {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -85,7 +92,7 @@ export const deleteCategory = async (categoryId: number): Promise<void> => {
     throw new Error("Token is required");
   }
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/categories/${categoryId}`, {
+    const res = await fetch(c(`/${categoryId}`), {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`

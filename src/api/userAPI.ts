@@ -1,3 +1,5 @@
+import { getMainApi } from "@/config";
+
 export interface User {
     userId: number;
     userName: string;
@@ -8,6 +10,11 @@ export interface User {
     address: string;
     password: string;
   }
+
+  const c = (path: string = ''): string => {
+    return getMainApi().users + path;
+  };
+  
   
   export const fetchUsers = async (): Promise<User[]> => {
     const token = localStorage.getItem('userToken');
@@ -15,7 +22,7 @@ export interface User {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch("http://localhost:8000/api/v1/users", {
+      const res = await fetch(c("/"), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -38,7 +45,7 @@ export interface User {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch("http://localhost:8000/api/v1/users", {
+      const res = await fetch(c("/"), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,7 +71,7 @@ export interface User {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/users/${userId}`, {
+      const res = await fetch(c(`/${userId}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +97,7 @@ export interface User {
       throw new Error("Token is required");
     }
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/users/${userId}`, {
+      const res = await fetch(c(`/${userId}`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
