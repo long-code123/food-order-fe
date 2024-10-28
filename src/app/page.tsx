@@ -1,6 +1,5 @@
 'use client'
 import { Order, fetchOrders } from '@/api/orderAPI';
-import { Payment, fetchPayments } from '@/api/paymentAPI';
 import { fetchShippers } from '@/api/shipperAPI';
 import { fetchStores } from '@/api/storeAPI';
 import { useAuth } from '@/components/authProvider/authProvider';
@@ -15,6 +14,7 @@ const { TabPane } = Tabs;
 
 interface ConvertedOrder extends Omit<Order, 'deliveryTime'> {
   deliveryTime: number;
+  totalAmount: number;
 }
 
 export default function Home() {
@@ -22,10 +22,9 @@ export default function Home() {
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalShipper, setTotalShipper] = useState(0);
   const [totalOrder, setTotalOrder] = useState(0);
-  const [payments, setPayments] = useState<Payment[]>([]);
   const [storesIncome, setStoreIncome] = useState(0);
   const [totalStore, setTotalStore] = useState(0);
-  const [totalPayment, setTotalPayment] = useState(0);
+  const [storeIncomeData, setStoreIncomeData] = useState<any[]>([]);
 
   useAuth();
 
@@ -33,28 +32,41 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const dataOrder = await fetchOrders();
-        const convertedOrders: ConvertedOrder[] = dataOrder.map(order => ({
-          ...order,
-          deliveryTime: parseInt(order.deliveryTime)
-        }));
-        console.log('Converted Orders: ', convertedOrders);
+        const convertedOrders: ConvertedOrder[] = dataOrder.map(order => {
+          const totalAmount = order.items.reduce(
+            (acc, item) => acc + item.food.price * item.quantity, 
+            0
+          );
+          const deliveryTime = parseInt(order.deliveryTime); // Chuyển đổi thành số nguyên nếu cần
+          console.log("Delivery Time:", deliveryTime); // In ra giá trị deliveryTime của từng đơn hàng
+          return {
+            ...order,
+            deliveryTime: parseInt(order.deliveryTime),
+            totalAmount
+          };
+
+        });
+        
         setOrders(convertedOrders);
         setTotalOrder(dataOrder.length);
         const total = convertedOrders.reduce((acc, order) => acc + order.deliveryTime, 0);
-        setTotalIncome(total * 3000); // 1 đơn vị là 3000 VND
+        setTotalIncome(total * 3000);
 
         const dataShipper = await fetchShippers();
         setTotalShipper(dataShipper.length);
 
-        const dataPayment = await fetchPayments();
-        setPayments(dataPayment);
-        setTotalPayment(dataPayment.length);
-        const totalIncomeStore = dataPayment.reduce((acc, payment) => acc + parseInt(payment.totalAmount), 0);
-        setStoreIncome(totalIncomeStore);
+        const storeIncome = convertedOrders.reduce((acc, order) => acc + order.totalAmount, 0);
+        setStoreIncome(Math.floor(storeIncome * 24000));
+
+        // Chuẩn bị dữ liệu cho biểu đồ thu nhập của cửa hàng
+        const incomeData = convertedOrders.map(order => ({
+          createdAt: order.createdAt,
+          totalAmount: order.totalAmount,
+        }));
+        setStoreIncomeData(incomeData);
 
         const dataStore = await fetchStores();
         setTotalStore(dataStore.length);
-
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -112,33 +124,34 @@ export default function Home() {
           </Card>
         </TabPane>
         <TabPane tab="Dashboard of Stores" key="2">
-          <Card title={<span style={{ fontSize: '30px' }}>Dashboard of Stores</span>} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginLeft: '100px', marginRight: '100px' }}>
-            <div>
-              <Statistic
-                title={<span style={{ fontSize: '20px' }}>Total Income:</span>}
-                value={storesIncome}
-                suffix="VND"
-              />
+          <Card title={<span style={{ fontSize: '30px' }}>Dashboard of Stores</span>}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginLeft: '100px', marginRight: '100px' }}>
+              <div>
+                <Statistic
+                  title={<span style={{ fontSize: '20px' }}>Total Income:</span>}
+                  value={storesIncome}
+                  suffix="VND"
+                />
+              </div>
+              <div>
+                <Statistic
+                  title={<span style={{ fontSize: '20px' }}>Total Stores:</span>}
+                  value={totalStore}
+                  suffix={<HomeOutlined />}
+                />
+              </div>
+              <div>
+                <Statistic
+                  title={<span style={{ fontSize: '20px' }}>Total Orders:</span>}
+                  value={totalOrder}
+                  suffix={<DollarCircleOutlined />}
+                />
+              </div>
             </div>
-            <div>
-              <Statistic
-                title={<span style={{ fontSize: '20px' }}>Total Stores:</span>}
-                value={totalStore}
-                suffix={<HomeOutlined />}
-              />
-            </div>
-            <div>
-              <Statistic
-                title={<span style={{ fontSize: '20px' }}>Total Payments:</span>}
-                value={totalPayment}
-                suffix={<DollarCircleOutlined />}
-              />
-            </div>
-          </div>
+          </Card>
           <Card title="Store's Income Per Day">
             <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={payments}>
+              <LineChart data={storeIncomeData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="createdAt"
@@ -159,4 +172,4 @@ export default function Home() {
       </Tabs>
     </AppLayout>
   );
-};
+}

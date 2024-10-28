@@ -37,7 +37,7 @@ const ViewDetailShipper = ({ params }: { params: { id: string } }) => {
                 const ordersData = await fetchOrderByShipper(shipperId);
                 setOrders(ordersData);
                 const totalDeliveryTime = ordersData.reduce((acc, curr) => acc + parseInt(curr.deliveryTime), 0);
-                const totalEarning = totalDeliveryTime * 1000;
+                const totalEarning = totalDeliveryTime * 3000;
                 setShipperEarning(totalEarning);
                 setTotalOrders(ordersData.length);
 
