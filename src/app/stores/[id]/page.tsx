@@ -1,15 +1,36 @@
-'use client'
-import { useEffect, useState } from 'react';
-import AppLayout from '@/components/layout';
-import { Food, createFood, deleteFood, fetchFoodsByStore, updateFood } from '@/api/foodAPI';
-import { Admin, fetchAdminInfo } from '@/api/adminAPI';
-import { Breadcrumb, Button, Card, Form, Input, Modal, Popconfirm, Space, Statistic, Table, TableProps, message, Tabs } from 'antd';
-import BreadCrumb from '@/components/breadcrumb';
-import { StarFilled } from '@ant-design/icons';
-import { fetchStores } from '@/api/storeAPI';
-import { Reviewstore, fetchReviewByStore } from '@/api/reviewstoreAPI';
-import { Payment, fetchPaymentByStore } from '@/api/paymentAPI';
-import { useAuth } from '@/components/authProvider/authProvider';
+"use client";
+import { useEffect, useState } from "react";
+import AppLayout from "@/components/layout";
+import {
+  Food,
+  createFood,
+  deleteFood,
+  fetchFoodsByStore,
+  updateFood,
+} from "@/api/foodAPI";
+import { Admin, fetchAdminInfo } from "@/api/adminAPI";
+import {
+  Breadcrumb,
+  Button,
+  Card,
+  Form,
+  Input,
+  Modal,
+  Popconfirm,
+  Space,
+  Statistic,
+  Table,
+  TableProps,
+  message,
+  Tabs,
+} from "antd";
+import BreadCrumb from "@/components/breadcrumb";
+import { StarFilled } from "@ant-design/icons";
+import { fetchStores } from "@/api/storeAPI";
+import { Reviewstore, fetchReviewByStore } from "@/api/reviewstoreAPI";
+// import { Payment, fetchPaymentByStore } from '@/api/paymentAPI';
+import { useAuth } from "@/components/authProvider/authProvider";
+import { fetchOrderByStore, Order } from "@/api/orderAPI";
 
 interface EditFoodForm {
   foodName: string;
@@ -22,13 +43,14 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
   const [foods, setFoods] = useState<Food[]>([]);
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [editingFood, setEditingFood] = useState<Food | null>(null);
-  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState<boolean>(false);
+  const [isUpdateModalVisible, setIsUpdateModalVisible] =
+    useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedStoreName, setSelectedStoreName] = useState('');
+  const [selectedStoreName, setSelectedStoreName] = useState("");
   const [reviewstores, setReviewstores] = useState<Reviewstore[]>([]);
   const [averageRating, setAverageRating] = useState<number>(0);
-  const [payments, setPayments] = useState<Payment[]>([]);
-  const [totalPayments, setTotalPayments] = useState<number>(0);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [totalOrder, setTotalOrder] = useState<number>(0);
   const [storeEarning, setStoreEarning] = useState<number>(0);
 
   useAuth();
@@ -39,31 +61,45 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
         const storeId = parseInt(params.id);
         const fetchReview = await fetchReviewByStore(storeId);
         setReviewstores(fetchReview);
-        const totalRating = fetchReview.reduce((acc, curr) => acc + parseInt(curr.rating), 0);
+        const totalRating = fetchReview.reduce(
+          (acc, curr) => acc + parseInt(curr.rating),
+          0
+        );
         const average = totalRating / fetchReview.length;
         setAverageRating(average);
         const fetchedFoods = await fetchFoodsByStore(storeId);
         setFoods(fetchedFoods);
         const dataAdmin = await fetchAdminInfo();
         setAdmin(dataAdmin);
-        const paymentsData = await fetchPaymentByStore(storeId);
-        setPayments(paymentsData);
-        setTotalPayments(paymentsData.length);
-        const total = paymentsData.reduce((acc, curr) => acc + parseInt(curr.totalAmount), 0);
-        setStoreEarning(total);
+        const ordersData = await fetchOrderByStore(storeId);
+        setOrders(ordersData);
+        setTotalOrder(ordersData.length);
+
+        // Tính tổng thu nhập cho cửa hàng
+        const total = ordersData.reduce((acc, order) => {
+          // Giả sử bạn đã có trường totalAmount trong ordersData hoặc có thể tính toán từ order.items
+          const totalAmount = order.items.reduce(
+            (innerAcc, item) => innerAcc + item.food.price * item.quantity,
+            0
+          );
+          return acc + totalAmount;
+        }, 0);
+        setStoreEarning(Math.floor(total * 24000));
+        
         const dataStore = await fetchStores();
-        const selectedStore = dataStore.find(store => store.storeId === storeId);
+        const selectedStore = dataStore.find(
+          (store) => store.storeId === storeId
+        );
         if (selectedStore) {
           setSelectedStoreName(selectedStore.storeName);
         }
       } catch (error) {
-        console.error('Error fetching foods:', error);
+        console.error("Error fetching foods:", error);
       }
     };
 
     fetchFoods();
   }, [params.id]);
-
 
   const [editForm] = Form.useForm();
 
@@ -85,7 +121,9 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
       const values: EditFoodForm = await editForm.validateFields(); // Lấy dữ liệu từ form
       await updateFood(editingFood!.foodId, values);
       const updatedFoods = [...foods]; // Sao chép danh sách foods
-      const index = updatedFoods.findIndex((food) => food.foodId === editingFood!.foodId); // Tìm vị trí của food cần cập nhật
+      const index = updatedFoods.findIndex(
+        (food) => food.foodId === editingFood!.foodId
+      ); // Tìm vị trí của food cần cập nhật
       if (index !== -1) {
         updatedFoods[index] = { ...editingFood!, ...values }; // Cập nhật thông tin food trong danh sách
         setFoods(updatedFoods);
@@ -110,29 +148,29 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
     }
   };
 
-  const columns1: TableProps<Reviewstore>['columns'] = [
+  const columns1: TableProps<Reviewstore>["columns"] = [
     {
-      title: 'Rating',
-      dataIndex: 'rating',
-      key: 'rating',
+      title: "Rating",
+      dataIndex: "rating",
+      key: "rating",
       render: (rating: number) => (
         <Space>
-          <StarFilled style={{ color: '#ffc107' }} />
+          <StarFilled style={{ color: "#ffc107" }} />
           <span>{rating}</span>
         </Space>
       ),
     },
     {
-      title: 'Comment',
-      dataIndex: 'comment',
-      key: 'comment',
+      title: "Comment",
+      dataIndex: "comment",
+      key: "comment",
     },
     {
-      title: 'Action',
-      key: 'action',
+      title: "Action",
+      key: "action",
       render: (text, record) => (
         <Space size="middle">
-          {admin?.role === 'super admin' && (
+          {admin?.role === "super admin" && (
             <>
               <Popconfirm
                 title="Are you sure to delete this review?"
@@ -147,43 +185,54 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
         </Space>
       ),
     },
-  ]
+  ];
 
-  const columns: TableProps<Food>['columns'] = [
+  const columns: TableProps<Food>["columns"] = [
     {
-      title: 'Name',
-      dataIndex: 'foodName',
-      key: 'foodName',
-      render: (text) => <a style={{ fontWeight: 'bold', fontSize: '25px', color: 'black' }}>{text}</a>,
+      title: "Name",
+      dataIndex: "foodName",
+      key: "foodName",
+      render: (text) => (
+        <a style={{ fontWeight: "bold", fontSize: "25px", color: "black" }}>
+          {text}
+        </a>
+      ),
     },
     {
-      title: 'Price',
-      dataIndex: 'price',
-      key: 'price',
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
       render: (price: number) => <span>{price} $</span>,
     },
     {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
     },
     {
-      title: 'Food Image',
-      dataIndex: 'foodImage',
-      key: 'foodImage',
-      render: (foodImage: string) => <img src={foodImage} style={{ width: '50px', height: '50px' }} />,
+      title: "Food Image",
+      dataIndex: "foodImage",
+      key: "foodImage",
+      render: (foodImage: string) => (
+        <img src={foodImage} style={{ width: "50px", height: "50px" }} />
+      ),
     },
     {
-      title: 'Action',
-      key: 'action',
+      title: "Action",
+      key: "action",
       render: (text, record) => (
         <Space size="middle">
-          {admin?.role === 'super admin' && (
+          {admin?.role === "super admin" && (
             <>
-              <Button type="primary" onClick={() => {
-                handleEditClick(record);
-                handleOpenModal();
-              }}>Update</Button>
+              <Button
+                type="primary"
+                onClick={() => {
+                  handleEditClick(record);
+                  handleOpenModal();
+                }}
+              >
+                Update
+              </Button>
               <Popconfirm
                 title="Are you sure to delete this food?"
                 onConfirm={() => handleDelete(record.foodId)}
@@ -201,44 +250,84 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
 
   return (
     <AppLayout activeMenuKey="store">
-      <BreadCrumb items={[selectedStoreName, 'Detail']} />
+      <BreadCrumb items={[selectedStoreName, "Detail"]} />
       <Card>
         <Tabs defaultActiveKey="1">
           <Tabs.TabPane tab="Information" key="1">
             <Card title="Information">
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', marginRight: '100px', marginLeft: '50px' }}>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ marginBottom: '10px', fontWeight: 'bold', fontSize: '16px' }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "20px",
+                  marginRight: "100px",
+                  marginLeft: "50px",
+                }}
+              >
+                <div style={{ textAlign: "center" }}>
+                  <div
+                    style={{
+                      marginBottom: "10px",
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                    }}
+                  >
                     Average Rating
                   </div>
                   <Statistic
                     title=""
                     value={averageRating}
                     precision={1}
-                    suffix={<Space><StarFilled style={{ color: '#ffc107' }} /></Space>}
-                    style={{ fontSize: '20px' }}
+                    suffix={
+                      <Space>
+                        <StarFilled style={{ color: "#ffc107" }} />
+                      </Space>
+                    }
+                    style={{ fontSize: "20px" }}
                   />
                 </div>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ marginBottom: '10px', fontWeight: 'bold', fontSize: '16px' }}>
+                <div style={{ textAlign: "center" }}>
+                  <div
+                    style={{
+                      marginBottom: "10px",
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                    }}
+                  >
                     Store Earning
                   </div>
                   <Statistic title="" value={storeEarning} suffix="VND" />
                 </div>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ marginBottom: '10px', fontWeight: 'bold', fontSize: '16px' }}>
+                <div style={{ textAlign: "center" }}>
+                  <div
+                    style={{
+                      marginBottom: "10px",
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                    }}
+                  >
                     Total Payments
                   </div>
-                  <Statistic title="" value={totalPayments} />
+                  <Statistic title="" value={totalOrder} />
                 </div>
               </div>
-              <Table columns={columns1} dataSource={reviewstores} pagination={{ pageSize: 5 }} />
+              <Table
+                columns={columns1}
+                dataSource={reviewstores}
+                pagination={{ pageSize: 5 }}
+              />
             </Card>
           </Tabs.TabPane>
           <Tabs.TabPane tab="List Food" key="2">
             <Card>
-              <p style={{ fontWeight: 'bold', fontSize: '20px' }}>List of Foods</p>
-              <Table columns={columns} dataSource={foods} pagination={{ pageSize: 5 }} />
+              <p style={{ fontWeight: "bold", fontSize: "20px" }}>
+                List of Foods
+              </p>
+              <Table
+                columns={columns}
+                dataSource={foods}
+                pagination={{ pageSize: 5 }}
+              />
             </Card>
           </Tabs.TabPane>
         </Tabs>
@@ -260,28 +349,28 @@ const ViewDetailStore = ({ params }: { params: { id: string } }) => {
           <Form.Item
             name="foodName"
             label="Name"
-            rules={[{ required: true, message: 'Please enter food name' }]}
+            rules={[{ required: true, message: "Please enter food name" }]}
           >
             <Input />
           </Form.Item>
           <Form.Item
             name="price"
             label="Price"
-            rules={[{ required: true, message: 'Please enter price' }]}
+            rules={[{ required: true, message: "Please enter price" }]}
           >
             <Input type="number" />
           </Form.Item>
           <Form.Item
             name="description"
             label="Description"
-            rules={[{ required: true, message: 'Please enter description' }]}
+            rules={[{ required: true, message: "Please enter description" }]}
           >
             <Input.TextArea rows={4} />
           </Form.Item>
           <Form.Item
             name="foodImage"
             label="Image"
-            rules={[{ required: true, message: 'Please enter Image' }]}
+            rules={[{ required: true, message: "Please enter Image" }]}
           >
             <Input />
           </Form.Item>
